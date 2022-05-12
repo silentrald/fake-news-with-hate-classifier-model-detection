@@ -19,6 +19,7 @@ class Trainer():
     _pretrained: str = 'jcblaise/roberta-tagalog-base'
     _truncation: str = 'both'
     _device: str = 'cpu'
+    _tpu: bool = False
     _checkpoint: str = 'checkpoint/fake-roberta-tagalog.pt'
     _batch_size: int
     _seed: int
@@ -94,6 +95,7 @@ class Trainer():
             if xm == None:
                 raise 'torch_xla not installed'
             self._device = xm.xla_device()
+            self._tpu = True
         if options.epochs:
             self.epochs = options.epochs
         if options.checkpoint:
@@ -132,7 +134,7 @@ class Trainer():
     def __init__(self):
         self.get_options()
 
-        torch.cuda.set_device(self._device)
+        torch.cuda.set_device('cuda:0' if self._tpu else self._device)
 
         np.random.seed(self._seed)
         torch.manual_seed(self._seed)
@@ -227,7 +229,7 @@ class Trainer():
 
             loss.backward()
             self._optimizer.step()
-            if xm != None and self._device == xm.xla_device():
+            if self._tpu:
                 xm.mark_step()
 
         train_loss = sum(losses) / len(losses)
