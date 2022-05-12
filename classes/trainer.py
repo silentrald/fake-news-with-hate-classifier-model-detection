@@ -2,6 +2,10 @@ import argparse
 import torch
 import torch.utils.data
 import torch.nn.functional
+try:
+    import torch_xla.core.xla_model as xm
+except:
+    xm = None
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
@@ -64,6 +68,8 @@ class Trainer():
                             default=42, help='Seed')
         parser.add_argument('--cuda', type=bool, action='store',
                             const=True, dest='cuda', nargs='?', help='Enable GPU')
+        parser.add_argument('--tpu', type=bool, action='store',
+                            const=True, dest='cuda', nargs='?', help='Enable TPU')
         parser.add_argument('--checkpoint', type=str,
                             help='Where to save/load the main.')
 
@@ -84,6 +90,10 @@ class Trainer():
 
         if options.cuda:
             self._device = 'cuda:0'
+        elif options.tpu:
+            if xm == None:
+                raise 'torch_xla not installed'
+            self._device = xm.xla_device()
         if options.epochs:
             self.epochs = options.epochs
         if options.checkpoint:
