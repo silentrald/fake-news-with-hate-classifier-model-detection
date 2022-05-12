@@ -3,8 +3,9 @@ import torch
 import torch.utils.data
 import torch.nn.functional
 try:
+    import torch_xla
     import torch_xla.core.xla_model as xm
-except:
+except Exception as e:
     xm = None
 import pandas as pd
 import numpy as np
@@ -69,7 +70,7 @@ class Trainer():
         parser.add_argument('--cuda', type=bool, action='store',
                             const=True, dest='cuda', nargs='?', help='Enable GPU')
         parser.add_argument('--tpu', type=bool, action='store',
-                            const=True, dest='cuda', nargs='?', help='Enable TPU')
+                            const=True, dest='tpu', nargs='?', help='Enable TPU')
         parser.add_argument('--checkpoint', type=str,
                             help='Where to save/load the main.')
 
