@@ -5,3 +5,4 @@ checkpoint
 .transformers
 *.sh
 *.ipynb
+*.pyc
