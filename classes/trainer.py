@@ -3,7 +3,6 @@ import torch
 import torch.utils.data
 import torch.nn.functional
 try:
-    import torch_xla
     import torch_xla.core.xla_model as xm
 except Exception as e:
     xm = None
