@@ -227,6 +227,8 @@ class Trainer():
 
             loss.backward()
             self._optimizer.step()
+            if xm != None and self._device == xm.xla_device():
+                xm.mark_step()
 
         train_loss = sum(losses) / len(losses)
         train_acc = correct / total
